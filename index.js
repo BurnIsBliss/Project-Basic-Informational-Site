@@ -1,39 +1,36 @@
-const http = require("http");
-const fs = require("fs");
+const express = require("express");
+const app = express();
 
-const server = http.createServer((req, res) => {
-	res.setHeader("Content-Type", "text/html");
-	let path = "./views/";
-	switch (req.url) {
-		case "/":
-			path += "index.html";
-			res.statusCode = 200;
-			break;
-		case "/about":
-			path += "about.html";
-			res.statusCode = 200;
-			break;
-		case "/contact-me":
-			path += "contact-me.html";
-			res.statusCode = 200;
-			break;
-		default:
-			path += "404.html";
-			res.statusCode = 404;
-			break;
-	}
+const PORT = 8080;
 
-	fs.readFile(path, (err, data) => {
-		if (err) {
-			console.log(err);
-			res.end();
-		} else {
-			res.write(data);
-			res.end();
-		}
+app.get("/", (req, res) => {
+	res.sendFile(__dirname + "/views/index.html", (err) => {
+		if (err) throw err;
 	});
 });
 
-server.listen(8080, "localhost", () => {
-	console.log("Listening for requests");
+app.get("/about", (req, res) => {
+	res.sendFile(__dirname + "/views/about.html", (err) => {
+		if (err) throw err;
+	});
+});
+
+app.get("/contact-me", (req, res) => {
+	res.sendFile(__dirname + "/views/contact-me.html", (err) => {
+		if (err) throw err;
+	});
+});
+
+app.get(/\/*/, (req, res) => {
+	res.status(404);
+	res.sendFile(__dirname + "/views/404.html", (err) => {
+		if (err) throw err;
+	});
+});
+
+app.listen(PORT, (error) => {
+	if (error) {
+		throw error;
+	}
+	console.log(`Server running on PORT, ${PORT}`);
 });
